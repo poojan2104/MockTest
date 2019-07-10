@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "APITestLogin";
+}
+
+<h2>API Test Login</h2>
+customer name :
+<input type="text" id="txtCustomerName" class="form-control" /><br />
+
+Email :
+<input type="email" id="txtEmail" class="form-control" /><br />
+
+Contect No :
+<input type="email" id="txtContectNo" class="form-control" /><br />
+
+CustomerTypeId :
+<input type="email" id="txtCustomerTypeId" class="form-control" /><br />
+
+Password
+<input type="password" id="txtPassword" class="form-control" /><br />
+
+<input type="button" id="btnSubmit" value="Register" class="btn btn-default" />
+<div id="msg">
+
+</div>
+
+
+@section scripts{
+    <script>
+        $('#btnSubmit').click(function () {
+            var Customer = {
+                CustomerName: $('#txtCustomerName').val(),
+                Email: $('#txtEmail').val(),
+                ContactNo: $('#txtContectNo').val(),
+                CustomerTypeId: $('#txtCustomerTypeId').val(),
+                Password: $('#txtPassword').val()
+            }
+            //$('#msg').text(JSON.stringify(Customer));
+            
+        
+            $.ajax({
+                type: "POST",
+                url: "http://homekeepapi.us-east-2.elasticbeanstalk.com/api/customer",
+                data: JSON.stringify(Customer),
+                contentType: "application/json",
+                success: function (response) {
+                    //alert("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
+                    $('#msg').text(JSON.stringify(response));
+                },
+                failure: function (response) {
+                    //alert(response.responseText);
+                    $('#msg').text(JSON.stringify(response));
+                },
+                error: function (response) {
+                    //alert(response.responseText);
+                    $('#msg').text(JSON.stringify(response));
+                }
+            });
+
+           
+        });
+    </script>
+}

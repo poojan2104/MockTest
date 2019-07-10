@@ -1,0 +1,248 @@
+﻿@model List<MockTest.Models.TestDetails>
+@{
+    ViewBag.Title = "TestDetails";
+}
+
+@{
+    int TestId = ViewBag.Id;
+}
+
+<input type="text" id="txtTestId" value="@TestId" style="display:none;" />
+
+@{
+    string TestDate = Convert.ToDateTime(TempData["TestDate"]).ToString("ddMMyy");
+}
+<h4>@TempData["TestType"] &nbsp; D. @TestDate</h4>
+
+
+<table class="table table-hover" id="Table">
+    <thead>
+        <tr>
+            <td>#</td>
+
+            <td>
+                Ranking
+            </td>
+            <td>
+                Distance (meter)
+            </td>
+            <td>
+                Fitness rating
+            </td>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="rows" onclick="ClickRow('@item.Id','@item.UserId','@item.Distance')">
+                <td></td>
+
+                <td class="userName">
+                    @item.UserName
+
+                </td>
+                <td>
+                    @item.Distance
+                </td>
+                <td>
+                    @{
+            double distance = Convert.ToDouble(item.Distance);
+            string ratting = "";
+            if (distance > 3000 && distance < 4000)
+            {
+                ratting = "Good";
+            }
+            else if (distance > 4000)
+            {
+                ratting = "Very Good";
+            }
+            else if (distance < 3000 && distance > 2000)
+            {
+                ratting = "Average";
+            }
+            else
+            {
+                ratting = "Bellow Average";
+            }
+                    }
+
+                    @ratting
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<br />
+<button id="btnAdd" class="btn btn-default">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+    ADD NEW ATHLETE TO TEST
+</button>
+<button id="btnDeleteTest" class="btn btn-default">
+    <i class="fa fa-trash-o" aria-hidden="true"></i>
+    DELETE TEST
+</button>
+
+<div class="modal fade" tabindex="-1" id="Modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 id="txtHeading"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="hide" id="txtIdOfTest" value="" />
+                    <label class="control-label">
+                        Name
+                    </label>
+                    <div>
+                        <select id="ddlUser" class="form-control">
+                            <option value="0">Select Name</option>
+                            @foreach (SelectListItem item in ViewBag.ddlUser)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">
+                        Distance(meter)
+                    </label>
+                    <div>
+                        <input type="number" id="txtDistance" value="" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" id="btnSave" class="btn btn-default"><i class="fa fa-database" aria-hidden="true"></i>   SAVE</button>
+                <button type="button" data-dismiss="modal" id="btnDelete" class="btn btn-default"><i class="fa fa-trash" aria-hidden="true"></i>   DELETE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        $("#btnAdd").click(function () {
+            $('#txtHeading').text("ADD NEW ATHLETE TO TEST");
+            $('#btnDelete').hide();
+            $('#txtIdOfTest').val(0);
+            $('#ddlUser').val(0);
+            $('#txtDistance').val(0);
+            $("#Modal").modal('show');
+        });
+        $("#btnSave").click(function () {
+            var testId = $('#txtTestId').val();
+            var userId = $('#ddlUser').val();
+            var distance = $('#txtDistance').val();
+            var TestDetailId = $('#txtIdOfTest').val();
+            if (distance != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddOrEdit", "Coach")",
+                    data: { testId: testId, userId: userId, distance: distance, TestDetailId: TestDetailId },
+                    success: function (result) {
+                        if (result == "Error") {
+                            alert("Error..!!!!");
+                        }
+                        else {
+                            location.reload(true);
+                        }
+                    }
+                });
+            }
+            else {
+                alert("Any Field shoud not left blank");
+            }
+        });
+        function ClickRow(id, userId, distance) {
+            $('#txtHeading').text("UPDATE ATHLET DISTANCE");
+            $('#btnDelete').show();
+            $('#ddlUser').val(userId);
+            $('#txtDistance').val(distance); 
+            $('#txtIdOfTest').val(id);
+            $("#Modal").modal('show');
+        }
+        $('#btnDelete').click(function () {
+            var id = $('#txtIdOfTest').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteAthleteFromTest", "Coach")",
+                data: { id: id },
+                success: function (result) {
+                    if (result == "Error") {
+                        alert("Error..!!!!");
+                    }
+                    else {
+                        //window.location.href = result;
+                        location.reload(true);
+                    }
+                }
+            });
+        });
+        $(function () {
+
+            var t = $('#Table').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[0, 'asc']]
+            });
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        //$("#test").click(function () {
+        //    location.reload(true);
+        //});
+        $('#btnDeleteTest').click(function () {
+            var Id = $('#txtTestId').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteTest", "Coach")",
+                data: { Id: Id },
+                success: function (result) {
+                    if (result == "Error") {
+                        alert("Error..!!!!");
+                    }
+                    else {
+                        window.location.href = result;
+                    }
+                }
+            });
+        });
+
+        $("#ddlUser").change(function () {
+            var userId = $('#ddlUser').val();
+            var testId = $('#txtTestId').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("FindUserDistance", "Coach")",
+                data: { userId: userId, testId: testId },
+                success: function (result) {
+                    if (result == "Error") {
+                        alert("Error..!!!!");
+                    }
+                    else {
+                        $('#txtDistance').val(result.distance);
+                        $('#txtIdOfTest').val(result.testDetailId);
+                    }
+                }
+            });
+        });
+
+    </script>
+}
+
+

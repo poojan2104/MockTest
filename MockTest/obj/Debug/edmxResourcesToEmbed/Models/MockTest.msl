@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="MockTestModelStoreContainer" CdmEntityContainer="MockTestEntities">
+    <FunctionImportMapping FunctionImportName="PR_Test_SelectAll" FunctionName="MockTestModel.Store.PR_Test_SelectAll">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="MockTestModel.PR_Test_SelectAll_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TestType" ColumnName="TestType" />
+          <ScalarProperty Name="TestDate" ColumnName="TestDate" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="PR_TestDetails_SelectAll_ById" FunctionName="MockTestModel.Store.PR_TestDetails_SelectAll_ById">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="MockTestModel.PR_TestDetails_SelectAll_ById_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TestId" ColumnName="TestId" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Distance" ColumnName="Distance" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+  </EntityContainerMapping>
+</Mapping>
