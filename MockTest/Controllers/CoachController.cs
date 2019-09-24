@@ -70,13 +70,13 @@ namespace MockTest.Controllers
                 SqlCommand cmd = new SqlCommand("PR_Test_Insert", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@TestType", testType);
-                cmd.Parameters.AddWithValue("@TestDate", Convert.ToDateTime(date));
+                cmd.Parameters.AddWithValue("@TestDate", DateTime.ParseExact(date, "dd/MM/yyyy", null));
                 con.Open();
                 cmd.ExecuteScalar();
             }
-            catch
+            catch(Exception e)
             {
-                return Json("Error");
+                return Json("Error "+e.ToString());
             }
             finally
             {
