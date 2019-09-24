@@ -1,0 +1,27 @@
+TestType	TotalAthlet
+----------------------------
+Cooper Test	4
+Sprint Test	11
+
+Id	TestType	TestDate	Total
+---------------------------------------------------
+1	Cooper Test	2019-04-30      4
+2	Sprint Test	2019-04-21 	3
+9	Sprint Test	2019-07-25 	2
+21	Cooper Test	2019-06-14 	NULL
+22	Sprint Test	2019-06-14 	2
+24	Sprint Test	2019-06-28 	4
+27	Sprint Test	2019-09-27 	NULL
+
+
+
+select tbl.TestType,sum(tbl.Total) as TotalAthlet from (select Test.Id, Test.TestType as TestType, Test.TestDate, tblDetail.Total from Test 
+left outer join (select TestDetails.TestId , COUNT(*) as Total from TestDetails Group by TestDetails.TestId) As tblDetail
+on Test.Id = tblDetail.TestId) as tbl group by tbl.TestType
+
+
+
+select Test.Id, Test.TestType, Test.TestDate, tblDetail.Total from Test 
+left outer join (select TestDetails.TestId , COUNT(*) as Total from TestDetails Group by TestDetails.TestId) As tblDetail
+on Test.Id = tblDetail.TestId
+
